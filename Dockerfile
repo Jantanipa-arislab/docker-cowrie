@@ -4,24 +4,24 @@
 
 ARG ARCH=
 FROM ${ARCH}debian:buster-slim as builder
-LABEL maintainer="Michel Oosterhof <michel@oosterhof.net>"
+LABEL maintainer="pwned pwned@pwned.pwned"
 
 WORKDIR /
 
 # This is a temporary workaround, see https://github.com/cowrie/docker-cowrie/issues/26
 ENV CRYPTOGRAPHY_DONT_BUILD_RUST=1
 
-ENV COWRIE_GROUP=cowrie \
-    COWRIE_USER=cowrie \
-    COWRIE_HOME=/cowrie
+ENV COWRIE_GROUP=pwned \
+    COWRIE_USER=pwned \
+    COWRIE_HOME=/pwned
 
 # Set locale to UTF-8, otherwise upstream libraries have bytes/string conversion issues
 ENV LC_ALL=en_US.UTF-8 \
     LANG=en_US.UTF-8 \
     LANGUAGE=en_US.UTF-8
 
-RUN groupadd -r -g 1000 ${COWRIE_GROUP} && \
-    useradd -r -u 1000 -d ${COWRIE_HOME} -m -g ${COWRIE_GROUP} ${COWRIE_USER}
+RUN groupadd -r -g 1000 pwned && \
+    useradd -r -u 1000 -d /pwned -m -g pwned pwned
 
 # Set up Debian prereqs
 RUN export DEBIAN_FRONTEND=noninteractive; \
@@ -46,7 +46,7 @@ RUN export DEBIAN_FRONTEND=noninteractive; \
 
 # Build a cowrie environment from github master HEAD.
 
-USER ${COWRIE_USER}
+USER pwned
 
 RUN git clone --separate-git-dir=/tmp/cowrie.git https://github.com/cowrie/cowrie ${COWRIE_HOME}/cowrie-git && \
     cd ${COWRIE_HOME} && \
@@ -59,11 +59,11 @@ RUN git clone --separate-git-dir=/tmp/cowrie.git https://github.com/cowrie/cowri
       pip install --no-cache-dir --upgrade -r ${COWRIE_HOME}/cowrie-git/requirements-output.txt
 
 FROM ${ARCH}debian:buster-slim AS runtime
-LABEL maintainer="Michel Oosterhof <michel@oosterhof.net>"
+LABEL maintainer="pwned <pwned@pwned.pwned>"
 
-ENV COWRIE_GROUP=cowrie \
-    COWRIE_USER=cowrie \
-    COWRIE_HOME=/cowrie
+ENV COWRIE_GROUP=pwned \
+    COWRIE_USER=pwned \
+    COWRIE_HOME=/pwned
 
 RUN groupadd -r -g 1000 ${COWRIE_GROUP} && \
     useradd -r -u 1000 -d ${COWRIE_HOME} -m -g ${COWRIE_GROUP} ${COWRIE_USER}
